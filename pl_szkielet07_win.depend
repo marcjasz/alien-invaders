@@ -1,0 +1,31 @@
+# depslib dependency file v1.0
+1460755918 source:e:\studia\semestr 4\gkiw\pl_szkielet07_win\lodepng.cpp
+	"lodepng.h"
+	<stdio.h>
+	<stdlib.h>
+	<fstream>
+
+1460755918 e:\studia\semestr 4\gkiw\pl_szkielet07_win\lodepng.h
+	<string.h>
+	<vector>
+	<string>
+	"lodepng.h"
+	<iostream>
+	"lodepng.h"
+
+1554552780 source:e:\studia\semestr 4\gkiw\pl_szkielet07_win\shaderprogram.cpp
+	"shaderprogram.h"
+
+1554552766 e:\studia\semestr 4\gkiw\pl_szkielet07_win\shaderprogram.h
+	"GL/glew.h"
+	"stdio.h"
+
+1469357978 e:\studia\semestr 4\gkiw\pl_szkielet07_win\glew\include\gl\glew.h
+	<stddef.h>
+	<inttypes.h>
+	<stdint.h>
+	<inttypes.h>
+	<Availability.h>
+	<OpenGL/glu.h>
+	<GL/glu.h>
+
