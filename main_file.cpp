@@ -52,8 +52,8 @@ void error_callback(int error, const char* description) {
 
 void keyCallback(GLFWwindow* window,int key,int scancode,int action,int mods) {
     if (action==GLFW_PRESS) {
-        if (key==GLFW_KEY_LEFT) speed_x=-PI/2;
-        if (key==GLFW_KEY_RIGHT) speed_x=PI/2;
+        if (key==GLFW_KEY_LEFT) speed_x=PI/2;
+        if (key==GLFW_KEY_RIGHT) speed_x=-PI/2;
         if (key==GLFW_KEY_UP) speed_y=PI/2;
         if (key==GLFW_KEY_DOWN) speed_y=-PI/2;
     }
@@ -124,7 +124,7 @@ void freeOpenGLProgram(GLFWwindow* window) {
 
 
 //Procedura rysująca zawartość sceny
-void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
+void drawScene(GLFWwindow* window,float mov_x,float mov_z) {
 	//************Tutaj umieszczaj kod rysujący obraz******************l
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -136,8 +136,8 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
     glm::mat4 P=glm::perspective(50.0f*PI/180.0f, aspectRatio, 0.01f, 50.0f); //Wylicz macierz rzutowania
 
     glm::mat4 M=glm::mat4(1.0f);
-	M=glm::rotate(M,angle_y,glm::vec3(1.0f,0.0f,0.0f)); //Wylicz macierz modelu
-	M=glm::rotate(M,angle_x,glm::vec3(0.0f,1.0f,0.0f)); //Wylicz macierz modelu
+	M=glm::translate(M,glm::vec3(mov_x,0.0f,0.0f)); //Wylicz macierz modelu
+	M=glm::translate(M,glm::vec3(0.0f,0.0f, mov_z)); //Wylicz macierz modelu
 
 
 	//Kostka
@@ -198,7 +198,7 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	window = glfwCreateWindow(1424, 768, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
+	window = glfwCreateWindow(1024, 1024, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
 
 	if (!window) //Jeżeli okna nie udało się utworzyć, to zamknij program
 	{
@@ -218,15 +218,15 @@ int main(void)
 	initOpenGLProgram(window); //Operacje inicjujące
 
 	//Główna pętla
-	float angle_x=0; //Aktualny kąt obrotu obiektu
-	float angle_y=0; //Aktualny kąt obrotu obiektu
+	float mov_x=0; //Aktualny kąt obrotu obiektu
+	float mov_z=0; //Aktualny kąt obrotu obiektu
 	glfwSetTime(0); //Zeruj timer
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
-        angle_x+=speed_x*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
-        angle_y+=speed_y*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
+        mov_x+=speed_x*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
+        mov_z+=speed_y*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
         glfwSetTime(0); //Zeruj timer
-		drawScene(window,angle_x,angle_y); //Wykonaj procedurę rysującą
+		drawScene(window,mov_x,mov_z); //Wykonaj procedurę rysującą
 		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.
 	}
 
