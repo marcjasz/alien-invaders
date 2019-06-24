@@ -35,7 +35,6 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "lodepng.h"
 #include "shaderprogram.h"
 #include "vicviper12.h"
-#include "myTeapot.h"
 
 float speed_x=0;
 float speed_y=0;
