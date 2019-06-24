@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1460755918 source:e:\studia\semestr 4\gkiw\pl_szkielet07_win\lodepng.cpp
+1561317587 source:e:\studia\semestr 4\gkiw\pl_szkielet07_win\lodepng.cpp
 	"lodepng.h"
 	<stdio.h>
 	<stdlib.h>
@@ -29,18 +29,20 @@
 	<OpenGL/glu.h>
 	<GL/glu.h>
 
-1560698659 source:e:\studia\semestr 4\gkiw\pl_szkielet07_win\main_file.cpp
+1561401666 source:e:\studia\semestr 4\gkiw\pl_szkielet07_win\main_file.cpp
 	<GL/glew.h>
 	<GLFW/glfw3.h>
 	<glm/glm.hpp>
 	<glm/gtc/type_ptr.hpp>
 	<glm/gtc/matrix_transform.hpp>
 	<stdlib.h>
+	<iostream>
 	<stdio.h>
+	<vector>
 	"constants.h"
 	"lodepng.h"
 	"shaderprogram.h"
-	"myCube.h"
+	"vicviper12.h"
 	"myTeapot.h"
 
 1487688962 e:\studia\semestr 4\gkiw\pl_szkielet07_win\glfw\include\glfw\glfw3.h
@@ -951,4 +953,14 @@
 1554816312 e:\studia\semestr 4\gkiw\pl_szkielet07_win\mycube.h
 
 1554723842 e:\studia\semestr 4\gkiw\pl_szkielet07_win\myteapot.h
+
+1561399029 e:\studia\semestr 4\gkiw\pl_szkielet07_win\tiny_obj_loader.h
+	<iostream>
+	<vector>
+	<string>
+	<cstdlib>
+	<fstream>
+	<math.h>
+
+1561400691 e:\studia\semestr 4\gkiw\pl_szkielet07_win\vicviper12.h
 

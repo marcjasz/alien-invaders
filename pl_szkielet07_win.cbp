@@ -55,6 +55,7 @@
 		<Unit filename="myTeapot.h" />
 		<Unit filename="shaderprogram.cpp" />
 		<Unit filename="shaderprogram.h" />
+		<Unit filename="tiny_obj_loader.h" />
 		<Unit filename="vertex.glsl" />
 		<Extensions>
 			<code_completion />

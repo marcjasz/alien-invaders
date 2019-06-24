@@ -19,6 +19,8 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_SWIZZLE
+#define _GLIBCXX_USE_CXX11_ABI 0
+#define _GLIBCXX_USE_C99 1
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -28,13 +30,12 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include <stdlib.h>
 #include <iostream>
 #include <stdio.h>
+#include <vector>
 #include "constants.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
-#include "myCube.h"
+#include "vicviper12.h"
 #include "myTeapot.h"
-#define TINYOBJLOADER_IMPLEMENTATION // define this in only *one* .cc
-#include "tiny_obj_loader.h"
 
 float speed_x=0;
 float speed_y=0;
@@ -45,11 +46,6 @@ ShaderProgram *sp;
 //Uchwyty na tekstury
 GLuint tex0;
 GLuint tex1;
-
-std::string inputfile = "obj/vicviper12.obj";
-tinyobj::attrib_t attrib;
-std::vector<tinyobj::shape_t> shapes;
-std::vector<tinyobj::material_t> materials;
 
 
 //Procedura obsługi błędów
@@ -115,69 +111,8 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 	sp=new ShaderProgram("vertex.glsl",NULL,"fragment.glsl");
 
-    tex0=readTexture("metal.png");
+    tex0=readTexture("skin.png");
     tex1=readTexture("sky.png");
-
-
-    std::string warn;
-    std::string err;
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, inputfile.c_str());
-
-    if (!warn.empty()) {
-      std::cout << warn << std::endl;
-    }
-
-    if (!err.empty()) {
-      std::cerr << err << std::endl;
-    }
-
-    if (!ret) {
-      exit(1);
-    }
-
-    // Loop over shapes
-//    for (size_t s = 0; s < shapes.size(); s++) {
-//      // Loop over faces(polygon)
-//      size_t index_offset = 0;
-//      for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
-//        int fv = shapes[s].mesh.num_face_vertices[f];
-//
-//        // Loop over vertices in the face.
-//        for (size_t v = 0; v < fv; v++) {
-//          // access to vertex
-//          tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
-//          tinyobj::real_t vx = attrib.vertices[3*idx.vertex_index+0];
-//          tinyobj::real_t vy = attrib.vertices[3*idx.vertex_index+1];
-//          tinyobj::real_t vz = attrib.vertices[3*idx.vertex_index+2];
-//          tinyobj::real_t nx = attrib.normals[3*idx.normal_index+0];
-//          tinyobj::real_t ny = attrib.normals[3*idx.normal_index+1];
-//          tinyobj::real_t nz = attrib.normals[3*idx.normal_index+2];
-//          tinyobj::real_t tx = attrib.texcoords[2*idx.texcoord_index+0];
-//          tinyobj::real_t ty = attrib.texcoords[2*idx.texcoord_index+1];
-//          // Optional: vertex colors
-//          // tinyobj::real_t red = attrib.colors[3*idx.vertex_index+0];
-//          // tinyobj::real_t green = attrib.colors[3*idx.vertex_index+1];
-//          // tinyobj::real_t blue = attrib.colors[3*idx.vertex_index+2];
-//        }
-//        index_offset += fv;
-//
-//        // per-face material
-//        shapes[s].mesh.material_ids[f];
-//      }
-//    }
-//    for(int x = 3; x < attrib.vertices.size(); x += 4){
-//        attrib.vertices.insert(attrib.vertices.begin() + x, 1.0f);
-//    }
-//    for(int x = 3; x < attrib.normals.size(); x += 4){
-//        attrib.normals.insert(attrib.normals.begin() + x, 0.0f);
-//    }
-//    for(int x = 0; x < attrib.vertices.size(); x += 1){
-//        attrib.vertices[x] /= 30;
-//    }
-//    for(int x = 0; x < 20; x++){
-//        std::cout << attrib.vertices[x] << " ";
-//    }
-//    std::cout << std::endl;
 }
 
 
@@ -188,8 +123,6 @@ void freeOpenGLProgram(GLFWwindow* window) {
     glDeleteTextures(1,&tex1);
     delete sp;
 }
-
-
 
 
 //Procedura rysująca zawartość sceny
@@ -207,19 +140,13 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z) {
     glm::mat4 M=glm::mat4(1.0f);
 	M=glm::translate(M,glm::vec3(mov_x,0.0f,0.0f)); //Wylicz macierz modelu
 	M=glm::translate(M,glm::vec3(0.0f,0.0f, mov_z)); //Wylicz macierz modelu
+    M=glm::scale(M,glm::vec3(0.1f,0.1f,0.1f));
 
-
-	//Kostka
-	/*float *verts=myCubeVertices;
-	float *normals=myCubeNormals;
-	float *texCoords=myCubeTexCoords;
-	unsigned int vertexCount=myCubeVertexCount;*/
-
-	//Czajnik
-	float *verts=&attrib.vertices[0];
-	float *normals=&attrib.normals[0];
-	float *texCoords=&attrib.texcoords[0];
-	unsigned int vertexCount=myTeapotVertexCount;
+	//Model
+	float *verts=viperVertices;
+	float *normals=viperNormals;
+	float *texCoords=viperTexCoords;
+	unsigned int vertexCount=viperVertexCount;
 
     sp->use();//Aktywacja programu cieniującego
     //Przeslij parametry programu cieniującego do karty graficznej

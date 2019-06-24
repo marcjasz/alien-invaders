@@ -2,9 +2,61 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="main_file.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="main_file.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="8008" topLine="199" />
+			<Cursor1 position="4919" topLine="28" />
+		</Cursor>
+	</File>
+	<File name="fragment.glsl" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="655" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="myCube.h" open="1" top="1" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5178" topLine="9" />
+		</Cursor>
+		<Folding>
+			<Collapse line="15" />
+			<Collapse line="77" />
+			<Collapse line="133" />
+			<Collapse line="191" />
+		</Folding>
+	</File>
+	<File name="tiny_obj_loader.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="9789" topLine="349" />
+		</Cursor>
+	</File>
+	<File name="myTeapot.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="422256" topLine="28" />
+		</Cursor>
+		<Folding>
+			<Collapse line="37" />
+			<Collapse line="3015" />
+			<Collapse line="5993" />
+			<Collapse line="8971" />
+		</Folding>
+	</File>
+	<File name="vertex.glsl" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="414" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="shaderprogram.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3618" topLine="101" />
+		</Cursor>
+	</File>
+	<File name="lodepng.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="162662" topLine="4658" />
+		</Cursor>
+	</File>
+	<File name="lodepng.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="950" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
