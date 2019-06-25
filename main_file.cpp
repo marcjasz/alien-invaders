@@ -36,6 +36,7 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "lodepng.h"
 #include "shaderprogram.h"
 #include "vicviper12.h"
+#include "myTeapot.h"
 
 float speed_x=0;
 float speed_y=0;
@@ -47,6 +48,49 @@ ShaderProgram *sp;
 GLuint tex0;
 GLuint tex1;
 
+
+class Model{
+    private:
+        glm::mat4 M = glm::mat4(1.0);
+    public:
+        unsigned int vertexCount;
+        float x,z,scale;
+        float* verts;
+        float* normals;
+        float* texCoords;
+    void draw(glm::mat4 P, glm::mat4 V, ShaderProgram *shader, GLFWwindow* window){
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        this->M=glm::translate(this->M,glm::vec3(this->x,0.0f,0.0f)); //Wylicz macierz modelu
+        this->M=glm::translate(this->M,glm::vec3(0.0f,0.0f, this->z)); //Wylicz macierz modelu
+
+        this->M=glm::scale(this->M,glm::vec3(this->scale,this->scale,this->scale));
+
+        //Przeslij parametry programu cieniującego do karty graficznej
+        glUniformMatrix4fv(shader->u("P"),1,false,glm::value_ptr(P));
+        glUniformMatrix4fv(shader->u("V"),1,false,glm::value_ptr(V));
+        glUniformMatrix4fv(shader->u("M"),1,false,glm::value_ptr(this->M));
+
+        glEnableVertexAttribArray(shader->a("vertex"));  //Włącz przesyłanie danych do atrybutu vertex
+        glVertexAttribPointer(shader->a("vertex"),3,GL_FLOAT,false,0,this->verts); //Wskaż tablicę z danymi dla atrybutu vertex
+
+        glEnableVertexAttribArray(shader->a("normal"));  //Włącz przesyłanie danych do atrybutu normal
+        glVertexAttribPointer(shader->a("normal"),3,GL_FLOAT,false,0,this->normals); //Wskaż tablicę z danymi dla atrybutu normal
+
+        glEnableVertexAttribArray(shader->a("texCoord0"));  //Włącz przesyłanie danych do atrybutu texCoord0
+        glVertexAttribPointer(shader->a("texCoord0"),2,GL_FLOAT,false,0,this->texCoords); //Wskaż tablicę z danymi dla atrybutu texCoord0
+        glUniform1i(shader->u("textureMap0"),0);
+
+        glDrawArrays(GL_TRIANGLES,0,this->vertexCount); //Narysuj obiekt
+
+        glDisableVertexAttribArray(sp->a("vertex"));  //Wyłącz przesyłanie danych do atrybutu vertex
+        glDisableVertexAttribArray(sp->a("normal"));  //Wyłącz przesyłanie danych do atrybutu normal
+        glDisableVertexAttribArray(sp->a("texCoord0"));  //Wyłącz przesyłanie danych do atrybutu texCoord0
+
+        glfwSwapBuffers(window); //Przerzuć tylny bufor na przedni
+    }
+
+};
 
 //Procedura obsługi błędów
 void error_callback(int error, const char* description) {
@@ -137,69 +181,31 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z) {
 
     glm::mat4 P=glm::perspective(50.0f*PI/180.0f, aspectRatio, 0.01f, 50.0f); //Wylicz macierz rzutowania
 
-    glm::mat4 M=glm::mat4(1.0f);
-	M=glm::translate(M,glm::vec3(mov_x,0.0f,0.0f)); //Wylicz macierz modelu
-	M=glm::translate(M,glm::vec3(0.0f,0.0f, mov_z)); //Wylicz macierz modelu
-    M=glm::scale(M,glm::vec3(0.01f,0.01f,0.01f));
+//    glm::mat4 M=glm::mat4(1.0f);
+//	M=glm::translate(M,glm::vec3(mov_x,0.0f,0.0f)); //Wylicz macierz modelu
+//	M=glm::translate(M,glm::vec3(0.0f,0.0f, mov_z)); //Wylicz macierz modelu
+//    M=glm::scale(M,glm::vec3(0.01f,0.01f,0.01f));
 
 	//Model
-	float *verts=viperVertices;
-	float *normals=viperNormals;
-	float *texCoords=viperTexCoords;
-	unsigned int vertexCount=viperVertexCount;
+	Model ship;
+	ship.x = mov_x;
+	ship.z = mov_z;
+	ship.scale = 0.01f;
+	ship.verts=viperVertices;
+	ship.normals=viperNormals;
+	ship.texCoords=viperTexCoords;
+	ship.vertexCount=viperVertexCount;
 
     sp->use();//Aktywacja programu cieniującego
-    //Przeslij parametry programu cieniującego do karty graficznej
-    glUniformMatrix4fv(sp->u("P"),1,false,glm::value_ptr(P));
-    glUniformMatrix4fv(sp->u("V"),1,false,glm::value_ptr(V));
-    glUniformMatrix4fv(sp->u("M"),1,false,glm::value_ptr(M));
+
     glUniform4f(sp->u("lp"),mov_x,0,mov_z+1,1); //Współrzędne źródła światła
 
     glUniform1i(sp->u("textureMap0"),0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D,tex0);
 
-    glUniform1i(sp->u("textureMap1"),1);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D,tex1);
+    ship.draw(P, V, sp, window);
 
-
-    glEnableVertexAttribArray(sp->a("vertex"));  //Włącz przesyłanie danych do atrybutu vertex
-    glVertexAttribPointer(sp->a("vertex"),3,GL_FLOAT,false,0,verts); //Wskaż tablicę z danymi dla atrybutu vertex
-
-    glEnableVertexAttribArray(sp->a("normal"));  //Włącz przesyłanie danych do atrybutu normal
-    glVertexAttribPointer(sp->a("normal"),3,GL_FLOAT,false,0,normals); //Wskaż tablicę z danymi dla atrybutu normal
-
-    glEnableVertexAttribArray(sp->a("texCoord0"));  //Włącz przesyłanie danych do atrybutu texCoord0
-    glVertexAttribPointer(sp->a("texCoord0"),2,GL_FLOAT,false,0,texCoords); //Wskaż tablicę z danymi dla atrybutu texCoord0
-
-    glDrawArrays(GL_TRIANGLES,0,vertexCount); //Narysuj obiekt
-    glfwSwapBuffers(window); //Przerzuć tylny bufor na przedni
-
-    //
-
-	M=glm::translate(M,glm::vec3(mov_x+2,0.0f,0.0f)); //Wylicz macierz modelu
-
-    glUniformMatrix4fv(sp->u("P"),1,false,glm::value_ptr(P));
-    glUniformMatrix4fv(sp->u("V"),1,false,glm::value_ptr(V));
-    glUniformMatrix4fv(sp->u("M"),1,false,glm::value_ptr(M));
-
-    glEnableVertexAttribArray(sp->a("vertex"));  //Włącz przesyłanie danych do atrybutu vertex
-    glVertexAttribPointer(sp->a("vertex"),3,GL_FLOAT,false,0,verts); //Wskaż tablicę z danymi dla atrybutu vertex
-
-    glEnableVertexAttribArray(sp->a("normal"));  //Włącz przesyłanie danych do atrybutu normal
-    glVertexAttribPointer(sp->a("normal"),3,GL_FLOAT,false,0,normals); //Wskaż tablicę z danymi dla atrybutu normal
-
-    glEnableVertexAttribArray(sp->a("texCoord0"));  //Włącz przesyłanie danych do atrybutu texCoord0
-    glVertexAttribPointer(sp->a("texCoord0"),2,GL_FLOAT,false,0,texCoords); //Wskaż tablicę z danymi dla atrybutu texCoord0
-
-    glDrawArrays(GL_TRIANGLES,0,vertexCount); //Narysuj obiekt
-
-    glDisableVertexAttribArray(sp->a("vertex"));  //Wyłącz przesyłanie danych do atrybutu vertex
-    glDisableVertexAttribArray(sp->a("normal"));  //Wyłącz przesyłanie danych do atrybutu normal
-    glDisableVertexAttribArray(sp->a("texCoord0"));  //Wyłącz przesyłanie danych do atrybutu texCoord0
-
-    glfwSwapBuffers(window); //Przerzuć tylny bufor na przedni
 }
 
 
