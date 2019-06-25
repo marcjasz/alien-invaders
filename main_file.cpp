@@ -43,6 +43,7 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 float speed_x=0;
 float speed_y=0;
 float speed_bullet=3;
+float speed_enemy=0.5;
 float shotCooldown = 0;
 bool shot = false;
 float aspectRatio=1;
@@ -113,7 +114,7 @@ class Model{
 
 };
 
-
+std::vector<Model> enemies;
 
 //Procedura obsługi błędów
 void error_callback(int error, const char* description) {
@@ -233,32 +234,39 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z,std::vector< std::pair
 
     ship.draw(P, V, sp, window);
 
+    for(auto enemy : enemies){
+        enemy.translate(glm::vec3(enemy.x, 0.0f, 0.0f));
+        enemy.translate(glm::vec3(0.0f, 0.0f, enemy.z));
+        enemy.rot(PI, glm::vec3(0.0f,1.0f,0.0f));
+        enemy.scale(glm::vec3(0.1f, 0.1f, 0.1f));
+
+        sp->use();//Aktywacja programu cieniującego
+
+        glEnableVertexAttribArray(sp->a("texCoord0"));  //Włącz przesyłanie danych do atrybutu texCoord0
+        glVertexAttribPointer(sp->a("texCoord0"),2,GL_FLOAT,false,0,enemy.texCoords); //Wskaż tablicę z danymi dla atrybutu texCoord0
+        glUniform1i(sp->u("textureMap0"),0);
+
+        glUniform4f(sp->u("lp"),enemy.x,0,enemy.z+3,1); //Współrzędne źródła światła
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D,tex1);
+
+        enemy.draw(P, V, sp, window);
+    }
+
+//    Model enemy;
+//	enemy.x = 4;
+//	enemy.z = 15;
+//	enemy.verts=swordfishVertices;
+//	enemy.normals=swordfishNormals;
+//	enemy.texCoords=swordfishTexCoords;
+//	enemy.vertexCount=swordfishVertexCount;
+//    enemy.translate(glm::vec3(enemy.x, 0.0f, 0.0f));
+//    enemy.translate(glm::vec3(0.0f, 0.0f, enemy.z));
+//    enemy.rot(PI, glm::vec3(0.0f,1.0f,0.0f));
+//    enemy.scale(glm::vec3(0.2f, 0.2f, 0.2f));
 
 
-    Model enemy;
-	enemy.x = 4;
-	enemy.z = 15;
-	enemy.verts=swordfishVertices;
-	enemy.normals=swordfishNormals;
-	enemy.texCoords=swordfishTexCoords;
-	enemy.vertexCount=swordfishVertexCount;
-    enemy.translate(glm::vec3(enemy.x, 0.0f, 0.0f));
-    enemy.translate(glm::vec3(0.0f, 0.0f, enemy.z));
-    enemy.rot(PI, glm::vec3(0.0f,1.0f,0.0f));
-    enemy.scale(glm::vec3(0.2f, 0.2f, 0.2f));
-
-    sp->use();//Aktywacja programu cieniującego
-
-    glEnableVertexAttribArray(sp->a("texCoord0"));  //Włącz przesyłanie danych do atrybutu texCoord0
-    glVertexAttribPointer(sp->a("texCoord0"),2,GL_FLOAT,false,0,enemy.texCoords); //Wskaż tablicę z danymi dla atrybutu texCoord0
-    glUniform1i(sp->u("textureMap0"),0);
-
-    glUniform4f(sp->u("lp"),enemy.x,0,enemy.z+3,1); //Współrzędne źródła światła
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D,tex1);
-
-    enemy.draw(P, V, sp, window);
 //    std::cout << mov_bullet <<  " ";
     for(auto pos : *bulletPos){
         Model bullet(pos.first, pos.second, myCubeVertices, myCubeNormals, myCubeTexCoords, myCubeVertexCount);
@@ -321,11 +329,14 @@ int main(void)
 	//Główna pętla
 	float mov_x=0; //Aktualny kąt obrotu obiektu
 	float mov_z=0; //Aktualny kąt obrotu obiektu
+	for(int i = 0; i < 20; i++){
+        enemies.emplace_back((i%5)*1.5-3, i/5*3+7, swordfishVertices, swordfishNormals, swordfishTexCoords, swordfishVertexCount);
+	}
     std::vector< std::pair<float,float> > bulletPos;
 	glfwSetTime(0); //Zeruj timer
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
-	    if(glm::abs(mov_x+speed_x*glfwGetTime()) < 3.5)
+	    if(glm::abs(mov_x+speed_x*glfwGetTime()) < 4)
             mov_x+=speed_x*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
         if(glm::abs(mov_z+speed_y*glfwGetTime()) < 3)
             mov_z+=speed_y*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
@@ -336,6 +347,10 @@ int main(void)
         }
         if(shotCooldown > 0)
             shotCooldown -= glfwGetTime();
+        for(int i = 0; i < enemies.size(); i++){
+            if(enemies[0].z > 1)
+                enemies[i].z -= glfwGetTime()*speed_enemy;
+        }
         glfwSetTime(0); //Zeruj timer
 		drawScene(window,mov_x,mov_z,&bulletPos,shot); //Wykonaj procedurę rysującą
 		if(shot == true && shotCooldown <= 0){
