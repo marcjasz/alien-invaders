@@ -186,8 +186,8 @@ void initOpenGLProgram(GLFWwindow* window) {
     tex2=readTexture("metal.png");
 }
 
-bool checkCollision(Model a, Model b){
-    if(glm::sqrt(glm::pow(a.x-b.x,2)+glm::pow(a.z-b.z,2)) < 1){
+bool checkCollision(Model a, Model b, float margin){
+    if(glm::sqrt(glm::pow(a.x-b.x,2)+glm::pow(a.z-b.z,2)) < margin){
         return true;
     }
 }
@@ -260,7 +260,7 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z, bool shot) {
 
         enemy.draw(P, V, sp, window);
 
-        if(checkCollision(enemy, ship)){
+        if(checkCollision(enemy, ship, 1)){
             gameOver = true;
         }
     }
@@ -289,7 +289,7 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z, bool shot) {
     std::vector<std::vector<Model>::iterator> enemyIds;
     for(auto bullet = bullets.begin(); bullet != bullets.end(); bullet++){
         for(auto it = enemies.begin(); it != enemies.end(); it++){
-            if(checkCollision(*bullet, *it)){
+            if(checkCollision(*bullet, *it, 0.7)){
                 bulletIds.push_back(bullet);
                 enemyIds.push_back(it);
             }
