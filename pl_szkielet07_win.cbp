@@ -46,6 +46,7 @@
 			<Add directory="glfw/lib" />
 			<Add directory="glew/lib" />
 		</Linker>
+		<Unit filename="SwordfishII.h" />
 		<Unit filename="constants.h" />
 		<Unit filename="fragment.glsl" />
 		<Unit filename="lodepng.cpp" />

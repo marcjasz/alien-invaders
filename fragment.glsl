@@ -19,7 +19,7 @@ void main(void) {
     vec4 kd=texture(textureMap0,iTexCoord0);
     vec4 ld=vec4(1,1,1,1); //Kolor ?wiat?a  rozpraszanego
     vec4 ks=vec4(1,1,1,1); //Kolor odbi? materia?u
-    vec4 ls=vec4(1,1,1,1); //Kolor ?wiat?a odbijanego
+    vec4 ls=vec4(0.1,0.1,0.1,1); //Kolor ?wiat?a odbijanego
 
     vec4 ml=normalize(l);
     vec4 mn=normalize(n);
@@ -29,5 +29,5 @@ void main(void) {
     float nl=clamp(dot(mn,ml),0,1); //cos k?ta pomi?dzy wektorami n i l
     float rv=pow(clamp(dot(mr,mv),0,1),2); //cos k?ta pomi?dzy wektorami r i v podniesiony do pot?gi (wyk?adnik Phonga)
 
-	pixelColor=vec4(kd.rgb /**ld.rgb*nl+ks.rgb*ls.rgb*rv*/,kd.a);
+	pixelColor=vec4(kd.rgb*ld.rgb*nl+ks.rgb*ls.rgb*rv,kd.a);
 }

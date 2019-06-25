@@ -32,21 +32,28 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include <iostream>
 #include <stdio.h>
 #include <vector>
+#include <utility>
 #include "constants.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
 #include "vicviper12.h"
 #include "SwordfishII.h"
+#include "myCube.h"
 
 float speed_x=0;
 float speed_y=0;
+float speed_bullet=3;
+float shotCooldown = 0;
+bool shot = false;
 float aspectRatio=1;
-
 ShaderProgram *sp;
+std::vector< std::pair<float,float> > bulletPos;
 
 //Uchwyty na tekstury
 GLuint tex0;
 GLuint tex1;
+GLuint tex2;
+
 
 
 class Model{
@@ -71,8 +78,18 @@ class Model{
         this->M=glm::scale(this->M, v);
     }
 
+    Model(){};
+
+    Model(float x, float z, float* verts, float* normals, float* texCoords, unsigned int vertexCount){
+        this->x = x;
+        this->z = z;
+        this->verts = verts;
+        this->normals = normals;
+        this->texCoords = texCoords;
+        this->vertexCount = vertexCount;
+    }
+
     void draw(glm::mat4 P, glm::mat4 V, ShaderProgram *shader, GLFWwindow* window){
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //Przeslij parametry programu cieniującego do karty graficznej
         glUniformMatrix4fv(shader->u("P"),1,false,glm::value_ptr(P));
@@ -85,9 +102,6 @@ class Model{
         glEnableVertexAttribArray(shader->a("normal"));  //Włącz przesyłanie danych do atrybutu normal
         glVertexAttribPointer(shader->a("normal"),3,GL_FLOAT,false,0,this->normals); //Wskaż tablicę z danymi dla atrybutu normal
 
-        glEnableVertexAttribArray(shader->a("texCoord0"));  //Włącz przesyłanie danych do atrybutu texCoord0
-        glVertexAttribPointer(shader->a("texCoord0"),2,GL_FLOAT,false,0,this->texCoords); //Wskaż tablicę z danymi dla atrybutu texCoord0
-        glUniform1i(shader->u("textureMap0"),0);
 
         glDrawArrays(GL_TRIANGLES,0,this->vertexCount); //Narysuj obiekt
 
@@ -95,10 +109,11 @@ class Model{
         glDisableVertexAttribArray(sp->a("normal"));  //Wyłącz przesyłanie danych do atrybutu normal
         glDisableVertexAttribArray(sp->a("texCoord0"));  //Wyłącz przesyłanie danych do atrybutu texCoord0
 
-        glfwSwapBuffers(window); //Przerzuć tylny bufor na przedni
     }
 
 };
+
+
 
 //Procedura obsługi błędów
 void error_callback(int error, const char* description) {
@@ -112,6 +127,7 @@ void keyCallback(GLFWwindow* window,int key,int scancode,int action,int mods) {
         if (key==GLFW_KEY_RIGHT) speed_x=-1;
         if (key==GLFW_KEY_UP) speed_y=1;
         if (key==GLFW_KEY_DOWN) speed_y=-1;
+        if (key==GLFW_KEY_SPACE) shot = true;
     }
     if (action==GLFW_RELEASE) {
         if (key==GLFW_KEY_LEFT) speed_x=0;
@@ -165,6 +181,8 @@ void initOpenGLProgram(GLFWwindow* window) {
 
     tex0=readTexture("skin.png");
     tex1=readTexture("Swordfish_II.png");
+    tex2=readTexture("metal.png");
+
 }
 
 
@@ -178,7 +196,7 @@ void freeOpenGLProgram(GLFWwindow* window) {
 
 
 //Procedura rysująca zawartość sceny
-void drawScene(GLFWwindow* window,float mov_x,float mov_z) {
+void drawScene(GLFWwindow* window,float mov_x,float mov_z,std::vector< std::pair<float,float> > *bulletPos, bool shot) {
 	//************Tutaj umieszczaj kod rysujący obraz******************l
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -189,16 +207,12 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z) {
 
     glm::mat4 P=glm::perspective(50.0f*PI/180.0f, aspectRatio, 0.01f, 50.0f); //Wylicz macierz rzutowania
 
-//    glm::mat4 M=glm::mat4(1.0f);
-//	M=glm::translate(M,glm::vec3(mov_x,0.0f,0.0f)); //Wylicz macierz modelu
-//	M=glm::translate(M,glm::vec3(0.0f,0.0f, mov_z)); //Wylicz macierz modelu
-//    M=glm::scale(M,glm::vec3(0.01f,0.01f,0.01f));
 
 	//Model
 	Model ship;
 	ship.x = mov_x;
 	ship.z = mov_z;
-	ship.verts=viperVertices;
+    ship.verts=viperVertices;
 	ship.normals=viperNormals;
 	ship.texCoords=viperTexCoords;
 	ship.vertexCount=viperVertexCount;
@@ -208,13 +222,18 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z) {
 
     sp->use();//Aktywacja programu cieniującego
 
-    glUniform4f(sp->u("lp"),mov_x,0,mov_z+1,1); //Współrzędne źródła światła
-
+    glEnableVertexAttribArray(sp->a("texCoord0"));  //Włącz przesyłanie danych do atrybutu texCoord0
+    glVertexAttribPointer(sp->a("texCoord0"),2,GL_FLOAT,false,0,ship.texCoords); //Wskaż tablicę z danymi dla atrybutu texCoord0
     glUniform1i(sp->u("textureMap0"),0);
+
+    glUniform4f(sp->u("lp"),ship.x,0,ship.z+1,1); //Współrzędne źródła światła
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D,tex0);
 
     ship.draw(P, V, sp, window);
+
+
 
     Model enemy;
 	enemy.x = 4;
@@ -230,13 +249,42 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z) {
 
     sp->use();//Aktywacja programu cieniującego
 
-    glUniform4f(sp->u("lp"),mov_x,0,mov_z+1,1); //Współrzędne źródła światła
-
+    glEnableVertexAttribArray(sp->a("texCoord0"));  //Włącz przesyłanie danych do atrybutu texCoord0
+    glVertexAttribPointer(sp->a("texCoord0"),2,GL_FLOAT,false,0,enemy.texCoords); //Wskaż tablicę z danymi dla atrybutu texCoord0
     glUniform1i(sp->u("textureMap0"),0);
+
+    glUniform4f(sp->u("lp"),enemy.x,0,enemy.z+3,1); //Współrzędne źródła światła
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D,tex1);
 
     enemy.draw(P, V, sp, window);
+//    std::cout << mov_bullet <<  " ";
+    for(auto pos : *bulletPos){
+        Model bullet(pos.first, pos.second, myCubeVertices, myCubeNormals, myCubeTexCoords, myCubeVertexCount);
+        bullet.translate(glm::vec3(bullet.x, 0.0f, 0.0f));
+        bullet.translate(glm::vec3(0.0f, 0.0f, bullet.z));
+        bullet.rot(bullet.z/bullet.x, glm::vec3(0.0f,0.0f,1.0f));
+        bullet.scale(glm::vec3(0.05f, 0.05f, 0.05f));
+
+        sp->use();//Aktywacja programu cieniującego
+
+        glEnableVertexAttribArray(sp->a("texCoord0"));  //Włącz przesyłanie danych do atrybutu texCoord0
+        glVertexAttribPointer(sp->a("texCoord0"),2,GL_FLOAT,false,0,bullet.texCoords); //Wskaż tablicę z danymi dla atrybutu texCoord0
+        glUniform1i(sp->u("textureMap0"),0);
+
+//        glUniform4f(sp->u("lp"),pos.first,0, pos.second+0.5,1); //Współrzędne źródła światła
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D,tex2);
+
+        bullet.draw(P, V, sp, window);
+    }
+    if(shot == true && shotCooldown <= 0)
+        bulletPos->emplace_back(ship.x, ship.z);
+
+    glfwSwapBuffers(window); //Przerzuć tylny bufor na przedni
+
 }
 
 
@@ -273,6 +321,7 @@ int main(void)
 	//Główna pętla
 	float mov_x=0; //Aktualny kąt obrotu obiektu
 	float mov_z=0; //Aktualny kąt obrotu obiektu
+    std::vector< std::pair<float,float> > bulletPos;
 	glfwSetTime(0); //Zeruj timer
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
@@ -280,8 +329,19 @@ int main(void)
             mov_x+=speed_x*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
         if(glm::abs(mov_z+speed_y*glfwGetTime()) < 3)
             mov_z+=speed_y*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
+        for(int i = 0; i < bulletPos.size(); i++){
+            bulletPos[i].second = bulletPos[i].second + speed_bullet*glfwGetTime();
+            if(bulletPos[i].second > 50)
+                bulletPos.erase(bulletPos.begin()+i);
+        }
+        if(shotCooldown > 0)
+            shotCooldown -= glfwGetTime();
         glfwSetTime(0); //Zeruj timer
-		drawScene(window,mov_x,mov_z); //Wykonaj procedurę rysującą
+		drawScene(window,mov_x,mov_z,&bulletPos,shot); //Wykonaj procedurę rysującą
+		if(shot == true && shotCooldown <= 0){
+            shotCooldown = 0.5;
+            shot = false;
+		}
 		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.
 	}
 
