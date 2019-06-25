@@ -36,7 +36,7 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "lodepng.h"
 #include "shaderprogram.h"
 #include "vicviper12.h"
-#include "myTeapot.h"
+#include "SwordfishII.h"
 
 float speed_x=0;
 float speed_y=0;
@@ -54,17 +54,25 @@ class Model{
         glm::mat4 M = glm::mat4(1.0);
     public:
         unsigned int vertexCount;
-        float x,z,scale;
+        float x,z;
         float* verts;
         float* normals;
         float* texCoords;
+
+    void rot(float angle, glm::vec3  ax){
+        this->M = glm::rotate(this->M, angle, ax);
+    }
+
+    void translate(glm::vec3 v){
+        this->M=glm::translate(this->M, v);
+    }
+
+    void scale(glm::vec3 v){
+        this->M=glm::scale(this->M, v);
+    }
+
     void draw(glm::mat4 P, glm::mat4 V, ShaderProgram *shader, GLFWwindow* window){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        this->M=glm::translate(this->M,glm::vec3(this->x,0.0f,0.0f)); //Wylicz macierz modelu
-        this->M=glm::translate(this->M,glm::vec3(0.0f,0.0f, this->z)); //Wylicz macierz modelu
-
-        this->M=glm::scale(this->M,glm::vec3(this->scale,this->scale,this->scale));
 
         //Przeslij parametry programu cieniującego do karty graficznej
         glUniformMatrix4fv(shader->u("P"),1,false,glm::value_ptr(P));
@@ -156,7 +164,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	sp=new ShaderProgram("vertex.glsl",NULL,"fragment.glsl");
 
     tex0=readTexture("skin.png");
-    tex1=readTexture("sky.png");
+    tex1=readTexture("Swordfish_II.png");
 }
 
 
@@ -190,11 +198,13 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z) {
 	Model ship;
 	ship.x = mov_x;
 	ship.z = mov_z;
-	ship.scale = 0.01f;
 	ship.verts=viperVertices;
 	ship.normals=viperNormals;
 	ship.texCoords=viperTexCoords;
 	ship.vertexCount=viperVertexCount;
+	ship.translate(glm::vec3(ship.x, 0.0f, 0.0f));
+	ship.translate(glm::vec3(0.0f, 0.0f, ship.z));
+	ship.scale(glm::vec3(0.01f,0.01f,0.01f));
 
     sp->use();//Aktywacja programu cieniującego
 
@@ -206,6 +216,27 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z) {
 
     ship.draw(P, V, sp, window);
 
+    Model enemy;
+	enemy.x = 4;
+	enemy.z = 15;
+	enemy.verts=swordfishVertices;
+	enemy.normals=swordfishNormals;
+	enemy.texCoords=swordfishTexCoords;
+	enemy.vertexCount=swordfishVertexCount;
+    enemy.translate(glm::vec3(enemy.x, 0.0f, 0.0f));
+    enemy.translate(glm::vec3(0.0f, 0.0f, enemy.z));
+    enemy.rot(PI, glm::vec3(0.0f,1.0f,0.0f));
+    enemy.scale(glm::vec3(0.2f, 0.2f, 0.2f));
+
+    sp->use();//Aktywacja programu cieniującego
+
+    glUniform4f(sp->u("lp"),mov_x,0,mov_z+1,1); //Współrzędne źródła światła
+
+    glUniform1i(sp->u("textureMap0"),0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D,tex1);
+
+    enemy.draw(P, V, sp, window);
 }
 
 
