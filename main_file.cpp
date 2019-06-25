@@ -46,6 +46,7 @@ float speed_bullet=3;
 float speed_enemy=0.5;
 float shotCooldown = 0;
 bool shot = false;
+bool gameOver = false;
 float aspectRatio=1;
 ShaderProgram *sp;
 std::vector< std::pair<float,float> > bulletPos;
@@ -183,9 +184,13 @@ void initOpenGLProgram(GLFWwindow* window) {
     tex0=readTexture("skin.png");
     tex1=readTexture("Swordfish_II.png");
     tex2=readTexture("metal.png");
-
 }
 
+bool checkCollision(Model a, Model b){
+    if(glm::sqrt(glm::pow(a.x-b.x,2)+glm::pow(a.z-b.z,2)) < 1){
+        return true;
+    }
+}
 
 //Zwolnienie zasobów zajętych przez program
 void freeOpenGLProgram(GLFWwindow* window) {
@@ -210,29 +215,31 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z,std::vector< std::pair
 
 
 	//Model
-	Model ship;
-	ship.x = mov_x;
-	ship.z = mov_z;
-    ship.verts=viperVertices;
-	ship.normals=viperNormals;
-	ship.texCoords=viperTexCoords;
-	ship.vertexCount=viperVertexCount;
-	ship.translate(glm::vec3(ship.x, 0.0f, 0.0f));
-	ship.translate(glm::vec3(0.0f, 0.0f, ship.z));
-	ship.scale(glm::vec3(0.01f,0.01f,0.01f));
+    Model ship;
+	if(!gameOver){
+        ship.x = mov_x;
+        ship.z = mov_z;
+        ship.verts=viperVertices;
+        ship.normals=viperNormals;
+        ship.texCoords=viperTexCoords;
+        ship.vertexCount=viperVertexCount;
+        ship.translate(glm::vec3(ship.x, 0.0f, 0.0f));
+        ship.translate(glm::vec3(0.0f, 0.0f, ship.z));
+        ship.scale(glm::vec3(0.01f,0.01f,0.01f));
 
-    sp->use();//Aktywacja programu cieniującego
+        sp->use();//Aktywacja programu cieniującego
 
-    glEnableVertexAttribArray(sp->a("texCoord0"));  //Włącz przesyłanie danych do atrybutu texCoord0
-    glVertexAttribPointer(sp->a("texCoord0"),2,GL_FLOAT,false,0,ship.texCoords); //Wskaż tablicę z danymi dla atrybutu texCoord0
-    glUniform1i(sp->u("textureMap0"),0);
+        glEnableVertexAttribArray(sp->a("texCoord0"));  //Włącz przesyłanie danych do atrybutu texCoord0
+        glVertexAttribPointer(sp->a("texCoord0"),2,GL_FLOAT,false,0,ship.texCoords); //Wskaż tablicę z danymi dla atrybutu texCoord0
+        glUniform1i(sp->u("textureMap0"),0);
 
-    glUniform4f(sp->u("lp"),ship.x,0,ship.z+1,1); //Współrzędne źródła światła
+        glUniform4f(sp->u("lp"),ship.x,0,ship.z+1,1); //Współrzędne źródła światła
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D,tex0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D,tex0);
 
-    ship.draw(P, V, sp, window);
+        ship.draw(P, V, sp, window);
+    }
 
     for(auto enemy : enemies){
         enemy.translate(glm::vec3(enemy.x, 0.0f, 0.0f));
@@ -252,6 +259,10 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z,std::vector< std::pair
         glBindTexture(GL_TEXTURE_2D,tex1);
 
         enemy.draw(P, V, sp, window);
+
+        if(checkCollision(enemy, ship)){
+            gameOver = true;
+        }
     }
 
 //    Model enemy;
@@ -287,6 +298,11 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z,std::vector< std::pair
         glBindTexture(GL_TEXTURE_2D,tex2);
 
         bullet.draw(P, V, sp, window);
+        for(auto it = enemies.begin(); it != enemies.end(); it++){
+            if(checkCollision(bullet, *it)){
+                it = enemies.erase(it);
+            }
+        }
     }
     if(shot == true && shotCooldown <= 0)
         bulletPos->emplace_back(ship.x, ship.z);
@@ -348,7 +364,7 @@ int main(void)
         if(shotCooldown > 0)
             shotCooldown -= glfwGetTime();
         for(int i = 0; i < enemies.size(); i++){
-            if(enemies[0].z > 1)
+            if((*enemies.begin()).z > 1)
                 enemies[i].z -= glfwGetTime()*speed_enemy;
         }
         glfwSetTime(0); //Zeruj timer
