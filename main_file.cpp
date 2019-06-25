@@ -27,6 +27,7 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "glm/ext.hpp"
 #include <stdlib.h>
 #include <iostream>
 #include <stdio.h>
@@ -55,10 +56,10 @@ void error_callback(int error, const char* description) {
 
 void keyCallback(GLFWwindow* window,int key,int scancode,int action,int mods) {
     if (action==GLFW_PRESS) {
-        if (key==GLFW_KEY_LEFT) speed_x=10;
-        if (key==GLFW_KEY_RIGHT) speed_x=-10;
-        if (key==GLFW_KEY_UP) speed_y=10;
-        if (key==GLFW_KEY_DOWN) speed_y=-10;
+        if (key==GLFW_KEY_LEFT) speed_x=1;
+        if (key==GLFW_KEY_RIGHT) speed_x=-1;
+        if (key==GLFW_KEY_UP) speed_y=1;
+        if (key==GLFW_KEY_DOWN) speed_y=-1;
     }
     if (action==GLFW_RELEASE) {
         if (key==GLFW_KEY_LEFT) speed_x=0;
@@ -130,8 +131,8 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 V=glm::lookAt(
-         glm::vec3(0, 0, -50),
-         glm::vec3(0,0,0),
+         glm::vec3(0, 5, -10),
+         glm::vec3(0,2,0),
          glm::vec3(0.0f,1.0f,0.0f)); //Wylicz macierz widoku
 
     glm::mat4 P=glm::perspective(50.0f*PI/180.0f, aspectRatio, 0.01f, 50.0f); //Wylicz macierz rzutowania
@@ -139,7 +140,7 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z) {
     glm::mat4 M=glm::mat4(1.0f);
 	M=glm::translate(M,glm::vec3(mov_x,0.0f,0.0f)); //Wylicz macierz modelu
 	M=glm::translate(M,glm::vec3(0.0f,0.0f, mov_z)); //Wylicz macierz modelu
-    M=glm::scale(M,glm::vec3(0.1f,0.1f,0.1f));
+    M=glm::scale(M,glm::vec3(0.01f,0.01f,0.01f));
 
 	//Model
 	float *verts=viperVertices;
@@ -152,7 +153,7 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z) {
     glUniformMatrix4fv(sp->u("P"),1,false,glm::value_ptr(P));
     glUniformMatrix4fv(sp->u("V"),1,false,glm::value_ptr(V));
     glUniformMatrix4fv(sp->u("M"),1,false,glm::value_ptr(M));
-    glUniform4f(sp->u("lp"),0,0,-6,1); //Współrzędne źródła światła
+    glUniform4f(sp->u("lp"),mov_x,0,mov_z+1,1); //Współrzędne źródła światła
 
     glUniform1i(sp->u("textureMap0"),0);
     glActiveTexture(GL_TEXTURE0);
@@ -162,6 +163,26 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z) {
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D,tex1);
 
+
+    glEnableVertexAttribArray(sp->a("vertex"));  //Włącz przesyłanie danych do atrybutu vertex
+    glVertexAttribPointer(sp->a("vertex"),3,GL_FLOAT,false,0,verts); //Wskaż tablicę z danymi dla atrybutu vertex
+
+    glEnableVertexAttribArray(sp->a("normal"));  //Włącz przesyłanie danych do atrybutu normal
+    glVertexAttribPointer(sp->a("normal"),3,GL_FLOAT,false,0,normals); //Wskaż tablicę z danymi dla atrybutu normal
+
+    glEnableVertexAttribArray(sp->a("texCoord0"));  //Włącz przesyłanie danych do atrybutu texCoord0
+    glVertexAttribPointer(sp->a("texCoord0"),2,GL_FLOAT,false,0,texCoords); //Wskaż tablicę z danymi dla atrybutu texCoord0
+
+    glDrawArrays(GL_TRIANGLES,0,vertexCount); //Narysuj obiekt
+    glfwSwapBuffers(window); //Przerzuć tylny bufor na przedni
+
+    //
+
+	M=glm::translate(M,glm::vec3(mov_x+2,0.0f,0.0f)); //Wylicz macierz modelu
+
+    glUniformMatrix4fv(sp->u("P"),1,false,glm::value_ptr(P));
+    glUniformMatrix4fv(sp->u("V"),1,false,glm::value_ptr(V));
+    glUniformMatrix4fv(sp->u("M"),1,false,glm::value_ptr(M));
 
     glEnableVertexAttribArray(sp->a("vertex"));  //Włącz przesyłanie danych do atrybutu vertex
     glVertexAttribPointer(sp->a("vertex"),3,GL_FLOAT,false,0,verts); //Wskaż tablicę z danymi dla atrybutu vertex
@@ -218,8 +239,10 @@ int main(void)
 	glfwSetTime(0); //Zeruj timer
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
-        mov_x+=speed_x*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
-        mov_z+=speed_y*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
+	    if(glm::abs(mov_x+speed_x*glfwGetTime()) < 3.5)
+            mov_x+=speed_x*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
+        if(glm::abs(mov_z+speed_y*glfwGetTime()) < 3)
+            mov_z+=speed_y*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
         glfwSetTime(0); //Zeruj timer
 		drawScene(window,mov_x,mov_z); //Wykonaj procedurę rysującą
 		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.

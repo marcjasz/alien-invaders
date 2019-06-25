@@ -29,7 +29,7 @@
 	<OpenGL/glu.h>
 	<GL/glu.h>
 
-1561401666 source:e:\studia\semestr 4\gkiw\pl_szkielet07_win\main_file.cpp
+1561404206 source:e:\studia\semestr 4\gkiw\pl_szkielet07_win\main_file.cpp
 	<GL/glew.h>
 	<GLFW/glfw3.h>
 	<glm/glm.hpp>
@@ -43,7 +43,6 @@
 	"lodepng.h"
 	"shaderprogram.h"
 	"vicviper12.h"
-	"myTeapot.h"
 
 1487688962 e:\studia\semestr 4\gkiw\pl_szkielet07_win\glfw\include\glfw\glfw3.h
 	<stddef.h>
@@ -962,5 +961,5 @@
 	<fstream>
 	<math.h>
 
-1561400691 e:\studia\semestr 4\gkiw\pl_szkielet07_win\vicviper12.h
+1561403033 e:\studia\semestr 4\gkiw\pl_szkielet07_win\vicviper12.h
 

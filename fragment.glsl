@@ -26,7 +26,7 @@ void main(void) {
     vec4 mr=reflect(-ml,mn); //Wektor kierunku odbicia w przestrzeni oka
 
     float nl=clamp(dot(mn,ml),0,1); //cos k?ta pomi?dzy wektorami n i l
-    float rv=pow(clamp(dot(mr,mv),0,1),2); //cos k?ta pomi?dzy wektorami r i v podniesiony do pot?gi (wyk?adnik Phonga)
+    float rv=pow(clamp(dot(mr,mv),0,1),200); //cos k?ta pomi?dzy wektorami r i v podniesiony do pot?gi (wyk?adnik Phonga)
 
 	pixelColor=vec4(kd.rgb*ld.rgb*nl+ks.rgb*ls.rgb*rv,kd.a);
 }
