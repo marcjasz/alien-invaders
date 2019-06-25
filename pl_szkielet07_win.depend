@@ -29,7 +29,11 @@
 	<OpenGL/glu.h>
 	<GL/glu.h>
 
+<<<<<<< HEAD
 1561500297 source:e:\studia\semestr 4\gkiw\pl_szkielet07_win\main_file.cpp
+=======
+1561499673 source:e:\studia\semestr 4\gkiw\pl_szkielet07_win\main_file.cpp
+>>>>>>> 831c582477fe8e84a65095ede4129b965463dacc
 	<GL/glew.h>
 	<GLFW/glfw3.h>
 	<glm/glm.hpp>

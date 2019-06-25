@@ -186,8 +186,13 @@ void initOpenGLProgram(GLFWwindow* window) {
     tex2=readTexture("metal.png");
 }
 
+<<<<<<< HEAD
 bool checkCollision(Model a, Model b, float margin){
     if(glm::sqrt(glm::pow(a.x-b.x,2)+glm::pow(a.z-b.z,2)) < margin){
+=======
+bool checkCollision(Model a, Model b){
+    if(glm::sqrt(glm::pow(a.x-b.x,2)+glm::pow(a.z-b.z,2)) < 1){
+>>>>>>> 831c582477fe8e84a65095ede4129b965463dacc
         return true;
     }
 }
@@ -260,7 +265,11 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z, bool shot) {
 
         enemy.draw(P, V, sp, window);
 
+<<<<<<< HEAD
         if(checkCollision(enemy, ship, 1)){
+=======
+        if(checkCollision(enemy, ship)){
+>>>>>>> 831c582477fe8e84a65095ede4129b965463dacc
             gameOver = true;
         }
     }
@@ -283,6 +292,11 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z, bool shot) {
         glBindTexture(GL_TEXTURE_2D,tex2);
 
         bullet.draw(P, V, sp, window);
+        for(auto it = enemies.begin(); it != enemies.end(); it++){
+            if(checkCollision(bullet, *it)){
+                it = enemies.erase(it);
+            }
+        }
     }
 
     std::vector<std::vector<Model>::iterator> bulletIds;
@@ -361,7 +375,11 @@ int main(void)
         if(shotCooldown > 0)
             shotCooldown -= glfwGetTime();
         for(int i = 0; i < enemies.size(); i++){
+<<<<<<< HEAD
             if(enemies.size() > 0 && (*enemies.begin()).z > 1)
+=======
+            if((*enemies.begin()).z > 1)
+>>>>>>> 831c582477fe8e84a65095ede4129b965463dacc
                 enemies[i].z -= glfwGetTime()*speed_enemy;
         }
         glfwSetTime(0); //Zeruj timer
