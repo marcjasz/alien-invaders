@@ -29,7 +29,7 @@
 	<OpenGL/glu.h>
 	<GL/glu.h>
 
-1561493603 source:e:\studia\semestr 4\gkiw\pl_szkielet07_win\main_file.cpp
+1561500297 source:e:\studia\semestr 4\gkiw\pl_szkielet07_win\main_file.cpp
 	<GL/glew.h>
 	<GLFW/glfw3.h>
 	<glm/glm.hpp>
