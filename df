@@ -1,0 +1,103 @@
+[33mcommit f4561c74588cf48b1272083757517210b612c0ad[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Merge: 2cc7c8f 831c582
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Tue Jun 25 23:42:28 2019 +0200
+
+    fixes
+
+[33mcommit 2cc7c8f450c2ab1dcd8a3c54838947c70fc41ad3[m
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Tue Jun 25 23:39:18 2019 +0200
+
+    fixes
+
+[33mcommit 5ca2b644fb36f23e2a9f9c9afb622f54a1072f3c[m
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Tue Jun 25 22:58:55 2019 +0200
+
+    collision detection
+
+[33mcommit 831c582477fe8e84a65095ede4129b965463dacc[m
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Tue Jun 25 22:58:55 2019 +0200
+
+    collision detection
+
+[33mcommit cef67c20727ec848a9859e8443f744bd39253b3c[m
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Tue Jun 25 22:40:18 2019 +0200
+
+    moving alien ships
+
+[33mcommit c5d58596516eedab9c6b3e3fd28881fb7baf7fc7[m
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Tue Jun 25 21:14:22 2019 +0200
+
+    enable shooting
+
+[33mcommit f36c414577b093e375fd1c5d85a3d8fa4aeae58e[m
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Tue Jun 25 18:27:03 2019 +0200
+
+    add enemy ship
+
+[33mcommit a037f4bbd54be0829e6b578f5ad6933d6f9cda24[m
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Tue Jun 25 15:03:19 2019 +0200
+
+    model class
+
+[33mcommit 99c8da5f80b3a7135cbe08376b22e6dfe3abf819[m
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Tue Jun 25 13:21:43 2019 +0200
+
+    movement limits, light source bound to model
+
+[33mcommit 729e8ac04e47c40c0c55154b9f01be0b7bd444dc[m
+Merge: 2316dee 93f6b76
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Mon Jun 24 20:12:06 2019 +0200
+
+    Merge branch 'master' of https://github.com/marcjasz/alien-invaders
+
+[33mcommit 2316deeae529b227350b0aacd5fb54001bf33cda[m
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Mon Jun 24 20:09:49 2019 +0200
+
+    gitignore
+
+[33mcommit 93f6b762c002fa6aa1132f4bbf679f99d410d4dc[m
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Mon Jun 24 20:09:49 2019 +0200
+
+    gitignore
+
+[33mcommit c7c7c2f0de98195a06dd6640fd374bc108d66eb0[m[33m ([m[1;32mmodel-loading[m[33m)[m
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Mon Jun 24 19:42:04 2019 +0200
+
+    stuff
+
+[33mcommit faec7b14e3f5da4a9294404a5cadac2c54803a04[m
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Mon Jun 24 19:35:25 2019 +0200
+
+    .obj to .h parser
+
+[33mcommit 79692c9225ea8b1cc33695504c2522f662ef9934[m
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Sat Jun 22 21:12:14 2019 +0200
+
+    tiny obj loader
+
+[33mcommit ea03a90d2bcea40ec564f75ce3e0569a93a90659[m
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Sun Jun 16 16:38:08 2019 +0200
+
+    Arrow control of model translation
+
+[33mcommit cc133edc9e898f9fe24c79c906b1c52fc18d136b[m
+Author: Marcin Jachymski <marcinjachymski@gmail.com>
+Date:   Fri Jun 7 22:59:04 2019 +0200
+
+    Init

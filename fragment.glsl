@@ -15,7 +15,6 @@ uniform sampler2D textureMap1; //Jednostka teksturująca 1
 out vec4 pixelColor; //Zmienna wyjsciowa fragment shadera. Zapisuje sie do niej ostateczny (prawie) kolor piksela
 
 void main(void) {
-//    vec4 kd=mix(texture(textureMap0,iTexCoord0),texture(textureMap1,iTexCoord1),0.25);  //Kolor materia?u dla ?wiat?a  rozpraszanego
     vec4 kd=texture(textureMap0,iTexCoord0);
     vec4 ld=vec4(1,1,1,1); //Kolor ?wiat?a  rozpraszanego
     vec4 ks=vec4(1,1,1,1); //Kolor odbi? materia?u

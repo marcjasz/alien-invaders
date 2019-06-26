@@ -41,7 +41,7 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "myCube.h"
 
 float speed_x=0;
-float speed_y=0;
+float speed_z=0;
 float speed_bullet=3;
 float speed_enemy=0.5;
 float shotCooldown = 0;
@@ -127,15 +127,15 @@ void keyCallback(GLFWwindow* window,int key,int scancode,int action,int mods) {
     if (action==GLFW_PRESS) {
         if (key==GLFW_KEY_LEFT) speed_x=1;
         if (key==GLFW_KEY_RIGHT) speed_x=-1;
-        if (key==GLFW_KEY_UP) speed_y=1;
-        if (key==GLFW_KEY_DOWN) speed_y=-1;
+        if (key==GLFW_KEY_UP) speed_z=1;
+        if (key==GLFW_KEY_DOWN) speed_z=-1;
         if (key==GLFW_KEY_SPACE) shot = true;
     }
     if (action==GLFW_RELEASE) {
         if (key==GLFW_KEY_LEFT) speed_x=0;
         if (key==GLFW_KEY_RIGHT) speed_x=0;
-        if (key==GLFW_KEY_UP) speed_y=0;
-        if (key==GLFW_KEY_DOWN) speed_y=0;
+        if (key==GLFW_KEY_UP) speed_z=0;
+        if (key==GLFW_KEY_DOWN) speed_z=0;
     }
 }
 
@@ -186,13 +186,8 @@ void initOpenGLProgram(GLFWwindow* window) {
     tex2=readTexture("metal.png");
 }
 
-<<<<<<< HEAD
 bool checkCollision(Model a, Model b, float margin){
     if(glm::sqrt(glm::pow(a.x-b.x,2)+glm::pow(a.z-b.z,2)) < margin){
-=======
-bool checkCollision(Model a, Model b){
-    if(glm::sqrt(glm::pow(a.x-b.x,2)+glm::pow(a.z-b.z,2)) < 1){
->>>>>>> 831c582477fe8e84a65095ede4129b965463dacc
         return true;
     }
 }
@@ -258,18 +253,14 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z, bool shot) {
         glVertexAttribPointer(sp->a("texCoord0"),2,GL_FLOAT,false,0,enemy.texCoords); //Wskaż tablicę z danymi dla atrybutu texCoord0
         glUniform1i(sp->u("textureMap0"),0);
 
-        glUniform4f(sp->u("lp"),enemy.x,0,enemy.z+3,1); //Współrzędne źródła światła
+        glUniform4f(sp->u("lp"),enemy.x,1,enemy.z+3,1); //Współrzędne źródła światła
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D,tex1);
 
         enemy.draw(P, V, sp, window);
 
-<<<<<<< HEAD
         if(checkCollision(enemy, ship, 1)){
-=======
-        if(checkCollision(enemy, ship)){
->>>>>>> 831c582477fe8e84a65095ede4129b965463dacc
             gameOver = true;
         }
     }
@@ -286,17 +277,10 @@ void drawScene(GLFWwindow* window,float mov_x,float mov_z, bool shot) {
         glVertexAttribPointer(sp->a("texCoord0"),2,GL_FLOAT,false,0,bullet.texCoords); //Wskaż tablicę z danymi dla atrybutu texCoord0
         glUniform1i(sp->u("textureMap0"),0);
 
-//        glUniform4f(sp->u("lp"),pos.first,0, pos.second+0.5,1); //Współrzędne źródła światła
-
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D,tex2);
 
         bullet.draw(P, V, sp, window);
-        for(auto it = enemies.begin(); it != enemies.end(); it++){
-            if(checkCollision(bullet, *it)){
-                it = enemies.erase(it);
-            }
-        }
     }
 
     std::vector<std::vector<Model>::iterator> bulletIds;
@@ -354,19 +338,18 @@ int main(void)
 	initOpenGLProgram(window); //Operacje inicjujące
 
 	//Główna pętla
-	float mov_x=0; //Aktualny kąt obrotu obiektu
-	float mov_z=0; //Aktualny kąt obrotu obiektu
+	float mov_x=0; //Aktualne przesuniecie statku
+	float mov_z=0;
 	for(int i = 0; i < 20; i++){
         enemies.emplace_back((i%5)*1.5-3, i/5*3+7, swordfishVertices, swordfishNormals, swordfishTexCoords, swordfishVertexCount);
 	}
-//    std::vector< std::pair<float,float> > bulletPos;
 	glfwSetTime(0); //Zeruj timer
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
 	    if(glm::abs(mov_x+speed_x*glfwGetTime()) < 4)
             mov_x+=speed_x*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
-        if(glm::abs(mov_z+speed_y*glfwGetTime()) < 3)
-            mov_z+=speed_y*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
+        if(glm::abs(mov_z+speed_z*glfwGetTime()) < 3)
+            mov_z+=speed_z*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
         for(int i = 0; i < bullets.size(); i++){
             bullets[i].z = bullets[i].z + speed_bullet*glfwGetTime();
             if(bullets[i].z > 50)
@@ -375,11 +358,7 @@ int main(void)
         if(shotCooldown > 0)
             shotCooldown -= glfwGetTime();
         for(int i = 0; i < enemies.size(); i++){
-<<<<<<< HEAD
-            if(enemies.size() > 0 && (*enemies.begin()).z > 1)
-=======
-            if((*enemies.begin()).z > 1)
->>>>>>> 831c582477fe8e84a65095ede4129b965463dacc
+            if(enemies.size() > 0 && (*enemies.begin()).z > -20)
                 enemies[i].z -= glfwGetTime()*speed_enemy;
         }
         glfwSetTime(0); //Zeruj timer
